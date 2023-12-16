@@ -1,0 +1,29 @@
+```mermaid
+sequenceDiagram
+    participant user
+    participant browser
+    participant server
+
+    Note over user, server: ...exampleapp/notes page is loaded successfully
+
+    autonumber
+    activate user
+    user-->browser: click <input type="text" name="note"> and type 'What a wonderful day?'
+    Note right of user: The user fills form text field with some content
+
+    activate browser
+    user->>+browser: click <input type="submit" value="Save">
+    deactivate user
+    Note right of user: The user submits the form
+
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note, Payload: [content: 'What a wonderful day?']
+    deactivate browser
+
+    activate server
+    Note right of browser: The browser takes submitted Form data and sends it to the server with HTTP POST request
+    server-->>browser: code [302 Found], Location: [/exampleapp/notes]
+    deactivate server
+    Note right of browser: The server responds with invitation to make another HTTP GET request and provides new Location for it
+
+    Note over user, server: ...The browser fetches the HTML code defining the content and the structure of the page from the server using an HTTP GET request with new Location
+```
