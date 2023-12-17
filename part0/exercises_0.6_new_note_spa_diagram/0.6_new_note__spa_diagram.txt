@@ -1,0 +1,31 @@
+```mermaid
+sequenceDiagram
+    participant user
+    participant browser
+    participant server
+
+    Note over user, server: .../exampleapp/spa page is loaded successfully
+
+    loop Every form submission
+    autonumber
+    activate user
+    user-->browser: click <input type="text" name="note"> and type 'What a wonderful SPA?'
+    Note right of user: The user fills form text field with some content
+
+    activate browser
+    user->>+browser: click <input type="submit" value="Save">
+    deactivate user
+    Note right of user: The user submits the form
+
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa, Payload: {content: "What a wonderful SPA?", date: "2023-12-17T10:47:16.326Z"}
+    deactivate browser
+
+    activate server
+    Note right of browser: The browser takes submitted Form data as JSON data and sends it to the server with HTTP POST request
+    server-->>browser: code [201 created] Response: {"message":"note created"}
+    deactivate server
+    Note right of browser: The server responds with message that note has been created without asking for redirect, and it sends no further HTTP requests
+
+    Note over user, server: ...application is ready for further form submissions
+    end
+```
