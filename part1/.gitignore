@@ -23,5 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 
-src
-public
+src*
+public*
+.eslintrc.cjs
+index.html
+package.json
+package-lock.json
+README.md
+vite.config.js
