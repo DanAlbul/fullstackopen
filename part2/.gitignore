@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 
 src*
+notes*
 public*
 .eslintrc.cjs
 index.html
@@ -31,3 +32,4 @@ package.json
 package-lock.json
 README.md
 vite.config.js
+db.json
