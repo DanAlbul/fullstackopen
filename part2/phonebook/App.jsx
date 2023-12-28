@@ -1,6 +1,7 @@
 import NumbersForm from './components/NumbersForm'
 import Number from './components/Number'
 import NumbersFilter from './components/NumbersFilter'
+import Notification from './components/Notification'
 import personsService from './services/numbers'
 import { useState, useEffect } from 'react'
 
@@ -9,6 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filtered, setFiltered] = useState('')
+  const [message, setMessage] = useState({ type: 'success', text: null})
 
   useEffect(() => {
     personsService
@@ -53,50 +55,59 @@ const App = () => {
         personsService.
           updateById(personToUpdate.id, {...personToUpdate, number: newNumber})
             .then(updatedPerson => {
+              setMessage({ type: 'success', text: `${personToUpdate.name} number is successfully updated` })
+              setTimeout(() => { setMessage({ type: 'success', text: null })}, 3000)
               setPersons(persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson))
           }).catch(error => {
-              alert(`Error updating ${personToUpdate.name} number`)
-              setPersons(persons.filter(person => person.id !== personToUpdate.id))
+            setMessage({ type: 'error', text: `Error updating ${personToUpdate.name} number` })
+            setTimeout(() => { setMessage({ type: 'error', text: null })}, 3000)
+            setPersons(persons.filter(person => person.id !== personToUpdate.id))
           })
       } else return
       return
     }
 
+    // add new person to the server
     const newPerson = {
       name: newName,
       number: newNumber,
       id: Math.floor(Math.random() * 1000000),
     }
-
     personsService
       .create(newPerson)
       .then(returnedPerson => {
+        setMessage({ type: 'success', text: `Added ${newPerson.name}` })
+        setTimeout(() => { setMessage({ type: 'success', text: null })}, 3000)
         setPersons(persons.concat(returnedPerson))
       })
       .catch(error => {
-        console.log(error)
-        alert(`Error adding ${newPerson.name} to server`)
+        setMessage({ type: 'error', text: `Error adding ${newPerson.name} to the server` })
+        setTimeout(() => { setMessage({ type: 'error', text: null })}, 3000)
         setPersons(persons.filter(person => person.id !== newPerson.id))
       })
     setNewName('')
     setNewNumber('')
   }
 
+  // delete person from the server
   const onDelete = (id) => {
     const personToDelete = persons.find(person => person.id === id)
     if (window.confirm(`Delete ${personToDelete.name} number?`)) {
       personsService
         .deleteById(id)
         .then(res => {
+          setMessage({ type: 'success', text: `Person ${personToDelete.name} was successfully removed from the server` })
+          setTimeout(() => { setMessage({ type: 'success', text: null })}, 3000)
           setPersons(persons.filter(person => person.id !== id)) })
         .catch(error => {
-          console.log(error)
-          alert(`Person with id ${id} is already removed from the server`)
+          setMessage({ type: 'error', text: `Person number with id ${id} is already removed from the server` })
+          setTimeout(() => { setMessage({ type: 'error', text: null })}, 3000)
           setPersons(persons.filter(person => person.id !== id))
       })
     } else return
   }
 
+  // event handlers for input fields
   const handleNameChange = (event) => setNewName(event.target.value),
    handleNumberChange = (event) => setNewNumber(event.target.value),
    handleFilterChange = (event) => setFiltered(event.target.value)
@@ -104,6 +115,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={message} />
       <NumbersFilter
         filtered={filtered}
         handleFilterChange={handleFilterChange}
